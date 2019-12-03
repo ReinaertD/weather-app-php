@@ -10,8 +10,13 @@
 
 <body>
 	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-6 d-flex justify-content-center flex-column">
+				<input id="city" class="text-center">
+				<button id="showWeather">DISCOVER THE UPCOMING WEATHER</button>
+			</div>
+		</div>
 		<div class="row">
-			
 			<!-- PHP START -->
 			<?php
 			// API REQUEST
@@ -22,14 +27,26 @@
 			$_result = json_decode($response, true);
 			// START WEATHER APP
 			$_days = $_result['list'];
-			var_dump($_days);
-			echo "<table><tr>" . $_date;
 				foreach ($_days as $day => $weather) {
 					if ($day % 8 === 0) {
-						echo "<td>$weather[dt_txt]</td>";
+						$timestamp = $weather['dt'];
+						$day = new DateTime("@$timestamp");
+						//var_dump($day);
+						echo "<div class=\"col-sm\"><div class=\"card\">";
+						echo "<div class=\"card-title\">$weather[dt_txt]";
+						//var_dump($weather[main][temp]);
+						echo "<div class=\"card-body\">";
+						echo "<table><tbody>";
+						echo "<tr><th>Current Temp</th><td>" . $weather[main][temp] . "</td>";
+						echo "<tr><th>Min. Temp</th><td>" . $weather[main][temp_min] . "</td>";
+						echo "<tr><th>Max. Temp</th><td>" . $weather[main][temp_max] . "</td>";
+						echo "<tr><th>Wind Speed</th><td>" . $weather[wind][speed] . "</td>";
+						echo "<tr><th>Wind Direction</th><td>" . $weather[wind][deg] . "</td>";
+						echo "</tbody></table>";
+						echo "</div></div>";
+						echo "</div></div>";
 					}
 			}
-			echo "</tr></table>"
 			?>
 		</div>
 	</div>
