@@ -8,48 +8,56 @@
 	<title> 5 Day Weather Forecast</title>
 </head>
 
-<body>
-	<div class="container">
-		<div class="row justify-content-center">
-			<div class="col-6 d-flex justify-content-center flex-column">
-				<input id="city" class="text-center">
-				<button id="showWeather">DISCOVER THE UPCOMING WEATHER</button>
-			</div>
-		</div>
-		<div class="row">
 			<!-- PHP START -->
 			<?php
 			// API REQUEST
-			$weatherLink = "http://api.openweathermap.org/data/2.5/forecast?q=Gent&units=metric&APPID=eb65fb39b35a837db45ed4f5089cbae6";
+			$weatherLink = "http://api.openweathermap.org/data/2.5/forecast?q=".htmlspecialchars($_POST['location'])  ."&units=metric&APPID=eb65fb39b35a837db45ed4f5089cbae6";
 			$dataRequest = curl_init($weatherLink);
 			curl_setopt($dataRequest, CURLOPT_RETURNTRANSFER, true);
 			$response = curl_exec($dataRequest);
 			$_result = json_decode($response, true);
-			// START WEATHER APP
 			$_days = $_result['list'];
+			$_currentWeather = $_days[0][weather][0][main];
+			switch($_currentWeather){
+				case Rain :
+					$_backgroundstatus = "rain.jpg";
+				break;
+				case Snow :
+					$_backgroundstatus = "snow.jpg";
+				break;
+				case Clear :
+					$_backgroundstatus = "sun.jpg";
+				break;
+				case Clouds :
+					$_backgroundstatus = "clouds.jpg";
+				break;
+				default :
+				$_backgroundstatus = "sun.jpg";
+			}
+echo "<body style=\"background: url($_backgroundstatus) no-repeat fixed center/cover ;\"  >";
+echo	"<div class=\"container\" ><div class=\"row justify-content-center\"><div class=\"col-6 d-flex justify-content-center\"><form class=\"d-flex justify-content-center flex-column\" action=\"\" method=\"post\"><input class=\"text-center\" type=\"text\" name=\"location\"><input type=\"submit\" value=\"Discover the weather\"></form></div></div>";
+			// START WEATHER APP
+			echo "<div class=\"row justify-content-center\"> <h1 class\"text-center\" style=\"color:white;\">Weather for ". htmlspecialchars($_POST['location']). "</h1></div>";
+			echo "<div class=\"card-deck\">";
 				foreach ($_days as $day => $weather) {
 					if ($day % 8 === 0) {
 						$timestamp = $weather['dt'];
-						$day = new DateTime("@$timestamp");
-						//var_dump($day);
-						echo "<div class=\"col-sm\"><div class=\"card\">";
-						echo "<div class=\"card-title\">$weather[dt_txt]";
-						//var_dump($weather[main][temp]);
-						echo "<div class=\"card-body\">";
-						echo "<table><tbody>";
-						echo "<tr><th>Current Temp</th><td>" . $weather[main][temp] . "</td>";
-						echo "<tr><th>Min. Temp</th><td>" . $weather[main][temp_min] . "</td>";
-						echo "<tr><th>Max. Temp</th><td>" . $weather[main][temp_max] . "</td>";
-						echo "<tr><th>Wind Speed</th><td>" . $weather[wind][speed] . "</td>";
-						echo "<tr><th>Wind Direction</th><td>" . $weather[wind][deg] . "</td>";
+						$date = new DateTime("@$timestamp");
+						$dateFormat = "l j F";
+						echo "<div class=\"col d-flex justify-content-center flex-column\" style=\"border-radius:0.25rem;color:white;background-color:rgba(0,0,0,0.4);\">";
+						echo "<div class=\"font-weight-bold my-2\">" . date($dateFormat,$timestamp) . "</div>" ;
+						echo "<table class=\"table-striped\"><tbody>";
+						echo "<tr><th>Current Temp</th><td style=\"text-align:right;\">" . $weather[main][temp] . "</td>";
+						echo "<tr><th>Wind Speed</th><td style=\"text-align:right;\">" . $weather[wind][speed] . "</td>";
+						echo "<tr><th>Wind Direction</th><td style=\"text-align:right;\">" . $weather[wind][deg] . "</td>";
+						echo "<tr><th>Weather</th><td class=\"small\" style=\"text-align:right;\">" . $weather[weather][0][main] . "</td>";
 						echo "</tbody></table>";
-						echo "</div></div>";
-						echo "</div></div>";
+						echo "</div>";
 					}
 			}
+			echo "</div>";
 			?>
 		</div>
-	</div>
 
 </body>
 
