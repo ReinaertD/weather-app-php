@@ -11,6 +11,7 @@
 <body>
 	<div class="container">
 		<div class="row">
+			
 			<!-- PHP START -->
 			<?php
 			// API REQUEST
@@ -21,12 +22,11 @@
 			$_result = json_decode($response, true);
 			// START WEATHER APP
 			$_days = $_result['list'];
-			$_date = $_days[0];
-			var_dump($_date);
+			var_dump($_days);
 			echo "<table><tr>" . $_date;
 				foreach ($_days as $day => $weather) {
 					if ($day % 8 === 0) {
-						echo "<td>LOL</td>";
+						echo "<td>$weather[dt_txt]</td>";
 					}
 			}
 			echo "</tr></table>"
